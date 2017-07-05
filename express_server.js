@@ -1,11 +1,14 @@
-let express = require("express");
-let app = express();
-let PORT = process.env.PORT || 8080;
+const express = require("express")
+const app = express()
+const PORT = process.env.PORT || 8080
+
+const cookieParser = require("cookie-parser")
+app.use(cookieParser())
 
 const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({extended: true}))
 
-app.set("view engine", "ejs");
+app.set("view engine", "ejs")
 
 // URL Database
 let urlDatabase = {
@@ -60,12 +63,18 @@ app.post("/urls/:id/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+//Login
+app.post("/login", (req, res) => {
+  res.cookie("username", req.body.username);
+  res.redirect("/urls");
+});
+
 //Updates an Url
 app.post("/urls/:id", (req, res) => {
   let shortUrl = req.params.id;
   let longUrl = req.body.longUrl
   urlDatabase[shortUrl].longUrl = longUrl
-  res.redirect(`/urls/${shortUrl}`);
+  res.redirect("/urls");
 });
 
 app.get("/urls/new", (req, res) => {
