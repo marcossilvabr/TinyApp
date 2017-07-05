@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <title>TinyApp</title>
-</head>
+  <head>
+  </head>
 <body>
-  <% include ./partials/_header %>
-  <h1>URL:</h1> <br/>
-  http://www.lighthouselabs.ca <br/>
-  <h1>Shortened form:</h1><br/>
-  b2xVn2
-</body>
+  <%- include partials/_header %>
+  ShortURL: <a href="/u/<%= shortUrl %>"><%= shortUrl %></a> -
+  LongURL: <a href="<%= longUrl %>"><%= longUrl %></a>
+  <form method="POST" action="/urls/<%= shortUrl %>/delete">
+    <input type="submit" value="Delete">
+  </form>
+  <form method="POST" action="/urls/<%= shortUrl %>">
+    <label for="longUrl">Enter a New URL:</label>
+    <input id="longUrl" type="text" name="longUrl" value="http://" style="width: 300px" >
+    <input type="submit" value="Update" >
+  </form>
 </html>
