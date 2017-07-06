@@ -4,15 +4,16 @@
     <title></title>
   </head>
   <body>
-    <% include ./partials/_header %>
-
+  <img src="https://cdn.tutsplus.com/mac/uploads/2013/09/vanityURL-preview-retina.png" width=200px height=200px><br>
+    <% include ./partials/_header %><br>
+    <fieldset>
     <ul>
+    Here are all your shortened URLs:<br><br>
       <% for (let shortUrl in urls) { %>
         <li>
           <% let longUrl = urls[shortUrl].longUrl %>
           ShortURL: <a href="/u/<%= shortUrl %>"><%= shortUrl %></a> -
           LongURL: <a href="<%= longUrl %>"><%= longUrl %></a>
-
           <form method="POST" action="/urls/<%= shortUrl %>/delete">
             <button type="submit" value="Delete">Delete</button>
             <a href="/urls/<%= shortUrl %>">Edit</a>
@@ -20,6 +21,7 @@
         </li>
       <% } %>
     </ul>
+    </fieldset><br><br>
     <a href="/urls/new">Shorten an URL!</a>
   </body>
 </html>

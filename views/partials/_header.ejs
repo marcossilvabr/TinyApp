@@ -1,5 +1,9 @@
-<h1>Header</h1>
-  <form method="POST" action="/login">
-    <input type="text" placeholder="username" name="username">
-    <input type="submit">
-  </form>
+<% if (user) { %>
+    Hi! <%= user.email%>
+    <form method="POST" action="/logout">
+      <button type="submit">Logout</button>
+    </form>
+<% } else { %>
+    <a href="/login"> Login</a> or
+    <a href="/register">Register</a>
+<% } %>

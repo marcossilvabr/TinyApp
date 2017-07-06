@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <title></title>
+  </head>
+  <body>
+    <% include ./partials/_header %>
+      <h2>Login</h2>
+      <form action="/login" method="POST" style="margin:30px;">
+        <fieldset>
+          <legend>Personal information:</legend>
+        <label>Email</label><br>
+        <input id="email" type="email" name="email" style="width: 300px"><br>
+        <label>Password</label><br>
+        <input id="password" type="password" name="password" style="width: 300px">
+        <input type="submit" value="Submit">
+        </fieldset>
+      </form>
+  </body>
+</html>

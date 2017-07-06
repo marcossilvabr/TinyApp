@@ -3,12 +3,12 @@
   <head>
   </head>
 <body>
-  <%- include partials/_header %>
+  <%- include partials/_header %><br>
   ShortURL: <a href="/u/<%= shortUrl %>"><%= shortUrl %></a> -
   LongURL: <a href="<%= longUrl %>"><%= longUrl %></a>
   <form method="POST" action="/urls/<%= shortUrl %>/delete">
     <input type="submit" value="Delete">
-  </form>
+  </form><br>
   <form method="POST" action="/urls/<%= shortUrl %>">
     <label for="longUrl">Enter a New URL:</label>
     <input id="longUrl" type="text" name="longUrl" value="http://" style="width: 300px" >
