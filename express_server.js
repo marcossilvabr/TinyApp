@@ -241,14 +241,9 @@ app.post("/register", (request, response) => {
 });
 
 // Function to generate 6 random characters (used both for user and short url creation)
-function generateRandomString() {
-  var chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  var length = 6;
-  var randomString = "";
-  for (var i = length; i > 0; --i) {
-    randomString += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return randomString;
+generateRandomString = function() {
+  let s = Math.random().toString(36).slice(2);
+  return s.substr(0, 6);
 }
 
 app.listen(PORT, () => {
