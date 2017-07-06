@@ -35,148 +35,148 @@ app.get('/urls.json', (req, res) => {
    res.json(urlDatabase);
 });
 
-app.use((request, response, next) => {
-  request.logged_in = request.session.user_id;
-  response.locals.user = users[request.session.user_id]
+app.use((req, res, next) => {
+  req.logged_in = req.session.user_id;
+  res.locals.user = users[req.session.user_id]
   next();
 });
 
 
 // HOME - If logged redirects to urls page. If not logged redirects to login page.
-app.get("/", (request, response) => {
-  if(response.locals.user) {
-    response.redirect("/urls");
+app.get("/", (req, res) => {
+  if(res.locals.user) {
+    res.redirect("/urls");
     return;
   }
-  response.redirect("/login");
+  res.redirect("/login");
 });
 
 // Generates a short url and adds it to the urlDatabase
-app.post("/urls", (request, response) => {
-  if (request.logged_in) {
+app.post("/urls", (req, res) => {
+  if (req.logged_in) {
     let shortUrl = generateRandomString();
-    let longUrl = request.body.longUrl;
-    let createdBy = request.session.user_id;
+    let longUrl = req.body.longUrl;
+    let createdBy = req.session.user_id;
     urlDatabase[shortUrl] = {
       shortUrl: shortUrl,
       longUrl: longUrl,
       createdBy: createdBy};
-    response.redirect("/urls");
+    res.redirect("/urls");
   }
   else {
-    response.status(401).send("Please <a href='/login'>Login Here</a>");
+    res.status(401).send("Please <a href='/login'>Login Here</a>");
   }
 });
 
 // Displays user's short and long urls
-app.get("/urls", (request, response) => {
-  if (response.locals.user) {
+app.get("/urls", (req, res) => {
+  if (res.locals.user) {
     const filteredDatabase = {};
 
     for(let url in urlDatabase) {
-      if (response.locals.user.id === urlDatabase[url].createdBy) {
+      if (res.locals.user.id === urlDatabase[url].createdBy) {
         filteredDatabase[url] = urlDatabase[url];
       }
     }
     let templateVars = {
       urls: filteredDatabase
     }
-    response.render("urls_index", templateVars);
+    res.render("urls_index", templateVars);
   }
   else {
-    response.status(401).send("Please <a href='/login'>Login Here</a>");
+    res.status(401).send("Please <a href='/login'>Login Here</a>");
   }
 });
 
 // Renders the url shortener page
-app.get("/urls/new", (request, response) => {
-  if (response.locals.user) {
-    response.render("urls_new");
+app.get("/urls/new", (req, res) => {
+  if (res.locals.user) {
+    res.render("urls_new");
   }
   else {
-    response.status(401).send("Please <a href='/login'>Login Here</a>");
+    res.status(401).send("Please <a href='/login'>Login Here</a>");
   }
 });
 
 // Shows a url page (with short and long urls)
-app.get("/urls/:id", (request, response) => {
+app.get("/urls/:id", (req, res) => {
 
-  let short = request.params.id;
+  let short = req.params.id;
   if(!urlDatabase[short]) {
-    response.status(404).send("Short Url not found");
+    res.status(404).send("Short Url not found");
     return;
   }
-  if (!response.locals.user) {
-    response.status(401).send("Please <a href='/login'>Login Here</a>");
+  if (!res.locals.user) {
+    res.status(401).send("Please <a href='/login'>Login Here</a>");
     return;
   }
-  if(response.locals.user.id !== urlDatabase[request.params.id].createdBy) {
-    response.status(403).send("This is not yours!");
+  if(res.locals.user.id !== urlDatabase[req.params.id].createdBy) {
+    res.status(403).send("You can't change an url from another user");
   }
   let long  = urlDatabase[short].longUrl;
   let templateVars = {
     shortUrl: short,
     longUrl: long
   };
-  response.render("urls_show", templateVars);
+  res.render("urls_show", templateVars);
 });
 
 // Redirects to the long url page
-app.get("/u/:shortUrl", (request, response) => {
+app.get("/u/:shortUrl", (req, res) => {
 
-  let shortUrl = request.params.shortUrl;
+  let shortUrl = req.params.shortUrl;
   if(!urlDatabase[shortUrl]) {
-    response.status(404).send("URL does not exist");
+    res.status(404).send("URL does not exist");
   }
   let longUrl = urlDatabase[shortUrl].longUrl;
-  response.redirect(longUrl);
+  res.redirect(longUrl);
 });
 
 // Deletes an url
-app.post("/urls/:id/delete", (request, response) => {
-  let shortUrl = request.params.id;
+app.post("/urls/:id/delete", (req, res) => {
+  let shortUrl = req.params.id;
   delete urlDatabase[shortUrl];
-  response.redirect("/urls");
+  res.redirect("/urls");
 })
 
 // Updates an urls
-app.post("/urls/:id", (request, response) => {
-  let shortUrl = request.params.id;
+app.post("/urls/:id", (req, res) => {
+  let shortUrl = req.params.id;
   if(!urlDatabase[shortUrl]) {
-    response.status(404).send("Short Url not found");
+    res.status(404).send("Short Url not found");
     return;
   }
-  if (!response.locals.user) {
-    response.status(401).send("Please <a href='/login'>Login Here</a>");
+  if (!res.locals.user) {
+    res.status(401).send("Please <a href='/login'>Login Here</a>");
     return;
   }
-  if(response.locals.user.id !== urlDatabase[request.params.id].createdBy) {
-    response.status(403).send("This is not yours!");
+  if(res.locals.user.id !== urlDatabase[req.params.id].createdBy) {
+    res.status(403).send("You can't change an url from another user");
     return;
   }
 
 
-  let longUrl = request.body.longUrl;
+  let longUrl = req.body.longUrl;
   urlDatabase[shortUrl].longUrl = longUrl;
-  response.redirect(`/urls/${shortUrl}`);
+  res.redirect(`/urls/${shortUrl}`);
 })
 
 // Renders the login page
-app.get("/login", (request, response) => {
-  if(!response.locals.user) {
-    response.render("urls_login");
+app.get("/login", (req, res) => {
+  if(!res.locals.user) {
+    res.render("urls_login");
     return;
   }
-  response.redirect("/urls");
+  res.redirect("/urls");
 })
 
 // Login post request
-app.post("/login", (request, response) => {
-  let email     = request.body.email;
-  let password  = request.body.password;
+app.post("/login", (req, res) => {
+  let email     = req.body.email;
+  let password  = req.body.password;
 
   if(email === "" || password === "") {
-    response.status(401).send("Please provide your Login and Password");
+    res.status(401).send("Please provide your Login and Password");
     return;
   }
     for (let user_id in users) {
@@ -185,11 +185,11 @@ app.post("/login", (request, response) => {
       if (email === user.email) {
 
         if (!hashed_password) {
-          response.send(403, "Password does not match");
+          res.send(403, "Password does not match");
           return;
         } else {
-          request.session.user_id = user_id;
-          response.redirect("/");
+          req.session.user_id = user_id;
+          res.redirect("/");
           return;
         }
       }
@@ -198,34 +198,34 @@ app.post("/login", (request, response) => {
 });
 
 // Logout post request
-app.post("/logout", (request, response) => {
-  request.session.user_id = null;
-  response.redirect("/");
+app.post("/logout", (req, res) => {
+  req.session.user_id = null;
+  res.redirect("/");
 })
 
 // Registration page
-app.get("/register", (request, response) => {
-   if(!response.locals.user) {
-    response.render("urls_register");
+app.get("/register", (req, res) => {
+   if(!res.locals.user) {
+    res.render("urls_register");
     return;
   }
-  response.redirect("/");
+  res.redirect("/");
 })
 
 // Registration post request
-app.post("/register", (request, response) => {
-  let email = request.body.email;
-  let password = request.body.password;
+app.post("/register", (req, res) => {
+  let email = req.body.email;
+  let password = req.body.password;
   let hashed_password = bcrypt.hashSync(password, 10);
 
   if (email === "" || password === "") {
-    response.status(400).send("Please provide your Login and Password");
+    res.status(400).send("Please provide your Login and Password");
     return;
   }
     for (let item in users) {
       let value = users[item];
       if(email === value.email) {
-        response.status(400).send("This email is already registered");
+        res.status(400).send("This email is already registered");
       }
     }
 
@@ -236,8 +236,8 @@ app.post("/register", (request, response) => {
     password: hashed_password
   }
   users[user_id] = userInfo;
-  request.session.user_id = user_id;
-  response.redirect("/urls");
+  req.session.user_id = user_id;
+  res.redirect("/urls");
 });
 
 // Function to generate 6 random characters (used both for user and short url creation)
