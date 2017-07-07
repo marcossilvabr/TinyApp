@@ -4,7 +4,7 @@ const PORT = process.env.PORT || 8080;
 const cookieSession = require("cookie-session");
 app.use(cookieSession( {
   name: 'session',
-  keys: ['secret'],
+  keys: ['key1'],
   maxAge: 24 * 60 * 60 * 1000
 }));
 
@@ -20,10 +20,10 @@ let urlDatabase = {
   "b2xVn2": {
     shortUrl: "b2xVn2",
     longUrl: "http://www.lighthouselabs.ca",
-    createdBy: "3f5f3s" }
+    createdBy: "1f2f3f" }
 }
 
-// URL DATABASE
+// USER DATABASE
 let users = {
   "1f2f3f": {
     id: "1f2f3f",
@@ -62,8 +62,7 @@ app.post("/urls", (req, res) => {
       longUrl: longUrl,
       createdBy: createdBy};
     res.redirect("/urls");
-  }
-  else {
+  } else {
     res.status(401).send("Please <a href='/login'>Login Here</a>");
   }
 });
@@ -82,9 +81,8 @@ app.get("/urls", (req, res) => {
       urls: filteredDatabase
     }
     res.render("urls_index", templateVars);
-  }
-  else {
-    res.status(401).send("Please <a href='/login'>Login Here</a>");
+  } else {
+      res.status(401).send("Please <a href='/login'>Login Here</a>");
   }
 });
 
@@ -185,7 +183,7 @@ app.post("/login", (req, res) => {
       if (email === user.email) {
 
         if (!hashed_password) {
-          res.send(403, "Password does not match");
+          res.status(403).send("Password does not match");
           return;
         } else {
           req.session.user_id = user_id;
@@ -193,8 +191,7 @@ app.post("/login", (req, res) => {
           return;
         }
       }
-    }
-
+    } res.status(404).send("Email not found")
 });
 
 // Logout post request
@@ -203,7 +200,7 @@ app.post("/logout", (req, res) => {
   res.redirect("/");
 })
 
-// Registration page
+// Renders the registration page
 app.get("/register", (req, res) => {
    if(!res.locals.user) {
     res.render("urls_register");
